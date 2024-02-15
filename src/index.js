@@ -1,6 +1,6 @@
 const express = require("express");
 const pasth = require("path");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const collection = require("./config");
 
 const app = express();
@@ -49,7 +49,7 @@ app.post("/login", async (req, res) => {
   try {
     const check = await collection.findOne({ name: req.body.username });
     if (!check) {
-      res.send("user  name cannot found");
+      return res.send("잘못된 아이디입니다.");
     }
     const isPasswordMatch = await bcrypt.compare(
       req.body.password,
@@ -58,9 +58,10 @@ app.post("/login", async (req, res) => {
     if (isPasswordMatch) {
       res.render("home");
     } else {
-      req.send("wrong password");
+      res.send("wrong password");
     }
-  } catch {
+  } catch (error) {
+    console.error(error);
     res.send("wrong Details");
   }
 });
