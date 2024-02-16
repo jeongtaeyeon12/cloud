@@ -22,6 +22,10 @@ const LoginSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  level: {
+    type: Number,
+    default: 1, // 기본 사용자는 1, 컨테이너를 만들 수 있는 권한은 2, 관리자 권한은 3
+  },
 });
 
 // collection part
