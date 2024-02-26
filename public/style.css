@@ -91,6 +91,10 @@ h2 {
   border-radius: 3px;
 }
 
+.info-container {
+  text-align: center;
+}
+
 p {
   margin-top: 15px;
 }

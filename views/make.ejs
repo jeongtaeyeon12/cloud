@@ -4,8 +4,61 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>컨테이너</title>
+    <link rel="stylesheet" href="/make.css" />
+    <!-- 외부 CSS 파일 링크 -->
   </head>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/make">컨테이너 만들기</a></li>
+        <li><a href="/manage">내 컨테이너 관리</a></li>
+        <li><a href="/board">게시판</a></li>
+        <li><a href="/myinfo">내정보</a></li>
+        <li><a href="/">로그아웃</a></li>
+      </ul>
+    </nav>
+  </header>
   <body>
-    <h1>컨테이너</h1>
+    <div class="container">
+      <h1>Create Container</h1>
+      <form action="/createContainer" method="post">
+        <div>
+          <label for="os">Choose an operating system:</label>
+          <select id="os" name="os">
+            <option value="centos">CentOS</option>
+            <option value="ubuntu">Ubuntu</option>
+          </select>
+        </div>
+        <div id="versionWrapper" style="display: none">
+          <label for="version">Choose a version:</label>
+          <select id="version" name="version">
+            <!-- Ubuntu 버전 선택 옵션은 JavaScript로 채워집니다 -->
+          </select>
+        </div>
+        <div>
+          <button type="submit" name="action" value="create">Create</button>
+          <button type="submit" name="action" value="cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      document.getElementById("os").addEventListener("change", function () {
+        var os = this.value;
+        var versionWrapper = document.getElementById("versionWrapper");
+        var versionSelect = document.getElementById("version");
+        if (os === "ubuntu") {
+          versionWrapper.style.display = "block";
+          // Ubuntu 버전 선택 옵션을 채웁니다.
+          versionSelect.innerHTML = `
+                    <option value="18.04">18.04</option>
+                    <option value="20.04">20.04</option>
+                `;
+        } else {
+          versionWrapper.style.display = "none";
+          versionSelect.innerHTML = "";
+        }
+      });
+    </script>
   </body>
 </html>

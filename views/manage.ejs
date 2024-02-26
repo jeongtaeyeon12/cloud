@@ -3,9 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>컨테이너 관리</title>
+    <title>User Management</title>
+    <link rel="stylesheet" href="/manage.css" />
   </head>
+
   <body>
-    <h1>컨테이너 관리</h1>
+    <nav>
+      <ul>
+        <li><a href="/make">서버 컨테이너 현황</a></li>
+        <li><a href="/manage">전체 사용자 관리</a></li>
+        <li><a href="/board">게시판 관리</a></li>
+        <li><a href="/">로그아웃</a></li>
+      </ul>
+    </nav>
+
+    <h1>User Management</h1>
+
+    <!-- 사용자 목록 -->
+    <ul>
+      <% users.forEach(user => { %>
+      <li>
+        <%= user.name %> (Level: <%= user.level %>) <% if (user.level !== 3) {
+        %>
+        <form action="/updateLevel/<%= user._id %>" method="post">
+          <select name="level">
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+          </select>
+          <button type="submit">Update Level</button>
+        </form>
+        <% } %>
+
+        <!-- 추가된 삭제 버튼 -->
+        <form action="/removeUser/<%= user._id %>" method="post">
+          <button type="submit" class="delete-btn">Delete</button>
+        </form>
+      </li>
+      <% }); %>
+    </ul>
   </body>
 </html>

@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Information</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <h1>내 정보</h1>
-    <p>이름: <%= user.name %></p>
-    <p>레벨: <%= user.level %></p>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/make">컨테이너 만들기</a></li>
+          <li><a href="/manage">내 컨테이너 관리</a></li>
+          <li><a href="/board">게시판</a></li>
+          <li><a href="/myinfo">내정보</a></li>
+          <li><a href="/">로그아웃</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="info-container">
+      <h1>내 정보</h1>
+      <p>이름: <%= user.name %></p>
+      <p>Level: <%= user.level %></p>
+    </div>
   </body>
 </html>

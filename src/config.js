@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const connect = mongoose.connect(
-  "mongodb+srv://wjdxodus6224:jhj*970521@cluster0.kzflcvj.mongodb.net/?retryWrites=true&w=majority"
+  "mongodb+srv://wjdxodus6224:jhj*970521@cluster0.kzflcvj.mongodb.net/?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
 //check
@@ -29,6 +30,7 @@ const LoginSchema = new mongoose.Schema({
 });
 
 // collection part
-const collection = new mongoose.model("users", LoginSchema);
 
-module.exports = collection;
+const User = mongoose.model("User", LoginSchema);
+
+module.exports = User;
