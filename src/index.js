@@ -6,6 +6,11 @@ const session = require("express-session");
 const Post = require("./board.js");
 const flash = require("connect-flash");
 const User = require("./config.js");
+const Container = require("./container.js");
+const { NodeSSH } = require("node-ssh");
+const ssh = new NodeSSH();
+const SSHClient = require("ssh2").Client;
+
 const app = express();
 
 // 미들웨어
@@ -336,6 +341,118 @@ app.post("/removeUser/:userId", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+// 컨테이너 생성하기
+app.post("/createContainer", async (req, res) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send("로그인이 필요합니다.");
+    }
+
+    // 현재 로그인한 사용자의 ID를 가져옴
+    const userId = req.user._id;
+
+    // POST 요청으로부터 컨테이너 생성에 필요한 데이터를 가져옴
+    const { operatingSystem, containername, containerDuration, containerPort } =
+      req.body;
+
+    // 중복된 컨테이너 이름 체크
+    const existingContainerName = await Container.findOne({ containername });
+    if (existingContainerName) {
+      return res.status(400).render("make", {
+        errorContainerName: "컨테이너 아이디가 이미 사용중입니다.",
+      });
+    }
+
+    // 중복된 포트 체크
+    const existingContainerPort = await Container.findOne({ containerPort });
+    if (existingContainerPort) {
+      return res.status(400).render("make", {
+        errorContainerPort: "컨테이너 포트가 이미 사용중입니다.",
+      });
+    }
+
+    // 데이터베이스에 새로운 컨테이너 생성
+    const newContainer = new Container({
+      userId,
+      operatingSystem,
+      containername,
+      containerDuration,
+      containerPort,
+    });
+
+    // SSH 연결 설정
+    const sshConfig = {
+      host: "192.168.56.1",
+      port: 60010,
+      username: "root",
+      password: "vagrant",
+    };
+
+    const ssh = new SSHClient();
+
+    ssh.on("ready", function () {
+      console.log("SSH 연결 성공");
+
+      // 쉘 스크립트 실행 명령어
+      const command = `./create_container.sh ${containername} ${containerPort}`;
+
+      ssh.exec(command, function (err, stream) {
+        if (err) throw err;
+
+        stream.on("data", function (data) {
+          console.log("쉘 스크립트 실행 결과:", data.toString());
+        });
+
+        stream.on("close", function () {
+          console.log("쉘 스크립트 실행 완료");
+          ssh.end();
+
+          // 데이터베이스에 저장
+          newContainer
+            .save()
+            .then(() => {
+              // 성공적으로 컨테이너가 생성되었음을 클라이언트에 응답
+              res.redirect("makecontainer");
+            })
+            .catch((saveError) => {
+              console.error("데이터베이스 저장 중 오류 발생:", saveError);
+              res.status(500).send("컨테이너 생성 중 오류가 발생했습니다.");
+            });
+        });
+      });
+    });
+
+    ssh.on("error", function (err) {
+      console.error("SSH 연결 오류:", err);
+      ssh.end();
+      res.status(500).send("컨테이너 생성 중 오류가 발생했습니다.");
+    });
+
+    ssh.connect(sshConfig);
+  } catch (error) {
+    console.error("오류 발생:", error);
+    res.status(500).send("컨테이너 생성 중 오류가 발생했습니다.");
+  }
+});
+
+// 내 컨테이너 정보 페이지
+app.get("/makecontainer", async (req, res) => {
+  try {
+    // 현재 로그인한 사용자의 ID를 가져옴
+    const userId = req.user._id;
+
+    // 사용자의 ID를 기반으로 해당 사용자의 컨테이너 정보를 조회
+    const userContainers = await Container.find({ userId });
+
+    // 조회된 컨테이너 정보를 템플릿에 전달하여 웹 페이지에 표시
+    res.render("makecontainer", { userContainers });
+  } catch (error) {
+    console.error("내 컨테이너 정보 조회 중 오류 발생:", error);
+    res.status(500).send("내 컨테이너 정보 조회 중 오류가 발생했습니다.");
+  }
+});
+
 const port = 5000;
 app.listen(port, () => {
   console.log(`Server running on Port: ${port}`);

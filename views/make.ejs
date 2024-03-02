@@ -11,7 +11,7 @@
     <nav>
       <ul>
         <li><a href="/make">컨테이너 만들기</a></li>
-        <li><a href="/manage">내 컨테이너 관리</a></li>
+        <li><a href="/makecontainer">내 컨테이너 관리</a></li>
         <li><a href="/board">게시판</a></li>
         <li><a href="/myinfo">내정보</a></li>
         <li><a href="/">로그아웃</a></li>
@@ -20,45 +20,57 @@
   </header>
   <body>
     <div class="container">
-      <h1>Create Container</h1>
+      <h1>컨테이너 만들기</h1>
       <form action="/createContainer" method="post">
         <div>
-          <label for="os">Choose an operating system:</label>
-          <select id="os" name="os">
-            <option value="centos">CentOS</option>
-            <option value="ubuntu">Ubuntu</option>
+          <label for="operatingSystem">운영 체제를 선택하세요:</label>
+          <select id="operatingSystem" name="operatingSystem">
+            <option value="ubuntu:20.04">Ubuntu 20.04</option>
           </select>
         </div>
-        <div id="versionWrapper" style="display: none">
-          <label for="version">Choose a version:</label>
-          <select id="version" name="version">
-            <!-- Ubuntu 버전 선택 옵션은 JavaScript로 채워집니다 -->
-          </select>
+        <div>
+          <label for="containername">컨테이너 이름:</label>
+          <input
+            type="text"
+            id="containername"
+            name="containername"
+            required
+            pattern="[A-Za-z]*"
+            title="영어로만 입력하세요"
+          />
+          <% if (typeof errorContainerName !== 'undefined') { %>
+          <p style="color: red"><%= errorContainerName %></p>
+          <% } %>
         </div>
+        <div>
+          <label for="containerDuration">컨테이너 사용 기간:</label>
+          <input type="date" id="containerDuration" name="containerDuration" />
+          <span>부터</span>
+          <input type="date" id="endDate" name="endDate" />
+          <span>까지</span>
+        </div>
+        <div>
+          <label for="containerPort">컨테이너 포트:</label>
+          <input
+            type="number"
+            id="containerPort"
+            name="containerPort"
+            min="30000"
+            max="39999"
+            required
+          />
+        </div>
+
         <div>
           <button type="submit" name="action" value="create">Create</button>
           <button type="submit" name="action" value="cancel">Cancel</button>
+          <% if (typeof errorContainerName !== 'undefined') { %>
+          <p class="error-message"><%= errorContainerName %></p>
+          <% } else if (typeof errorContainerPort !== 'undefined') { %>
+          <p class="error-message"><%= errorContainerPort %></p>
+          <% } %>
         </div>
       </form>
     </div>
-
-    <script>
-      document.getElementById("os").addEventListener("change", function () {
-        var os = this.value;
-        var versionWrapper = document.getElementById("versionWrapper");
-        var versionSelect = document.getElementById("version");
-        if (os === "ubuntu") {
-          versionWrapper.style.display = "block";
-          // Ubuntu 버전 선택 옵션을 채웁니다.
-          versionSelect.innerHTML = `
-                    <option value="18.04">18.04</option>
-                    <option value="20.04">20.04</option>
-                `;
-        } else {
-          versionWrapper.style.display = "none";
-          versionSelect.innerHTML = "";
-        }
-      });
-    </script>
   </body>
 </html>

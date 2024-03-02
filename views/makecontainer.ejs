@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 컨테이너 정보</title>
+    <link rel="stylesheet" href="/mc.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+    />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/make">컨테이너 만들기</a></li>
+          <li><a href="/makecontainer">내 컨테이너 관리</a></li>
+          <li><a href="/board">게시판</a></li>
+          <li><a href="/myinfo">내정보</a></li>
+          <li><a href="/">로그아웃</a></li>
+        </ul>
+      </nav>
+    </header>
+    <h1>내 컨테이너 관리</h1>
+    <% if (userContainers.length === 0) { %>
+    <p>현재 생성된 컨테이너가 없습니다.</p>
+    <% } else { %> <% userContainers.forEach(container => { %>
+    <div class="container-box">
+      <div class="container-name">
+        컨테이너 이름: <%= container.containername %>
+      </div>
+      <div class="container-info">
+        <p>운영 체제: <%= container.operatingSystem %></p>
+        <p>사용 기간: <%= container.containerDuration %> 시간</p>
+        <p>접속 포트: <%= container.containerPort %></p>
+        <a
+          href="http://192.168.1.10:<%= container.containerPort %>"
+          class="connect-button"
+          target="_blank"
+          >컨테이너 접속</a
+        >
+      </div>
+    </div>
+    <% }); %> <% } %>
+  </body>
+</html>
